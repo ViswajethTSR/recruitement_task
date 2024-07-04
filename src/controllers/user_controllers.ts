@@ -18,7 +18,7 @@ export const fetchUser = async (req: Request, res: Response) => {
 
         const query = name || minAge && maxAge ? { name: new RegExp(name as string, 'i'), age: { $gte: minAge, $lte: maxAge } } : {};
 
-        const users = await UserModel.find(query)
+        const users = await UserModel.find(query, { __v: 0, _id: 0 })
             .sort({ age: 1 })
             .skip((Number(page === '0' ? 1 : page) - 1) * Number(limit))
             .limit(Number(limit));
