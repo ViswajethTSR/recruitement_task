@@ -16,7 +16,11 @@ export const fetchUser = async (req: Request, res: Response) => {
     try {
         const { name, page, limit, minAge, maxAge, sort } = req.query;
 
-        const query = name || minAge && maxAge ? { name: new RegExp(name as string, 'i'), age: minAge && maxAge ? { $gte: minAge, $lte: maxAge } : {} } : {};
+        const query = name ? {
+            name: new RegExp(name as string, 'i'),
+            age: minAge && maxAge ? { $gte: minAge, $lte: maxAge } : { $gte: 0 }
+        } : {};
+        
         const sortOrder = sort === 'des' ? -1 : 1
 
         const users = await UserModel.find(query, { __v: 0, _id: 0 })
