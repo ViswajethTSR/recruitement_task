@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { UserModel } from '../models/user_model';
 
 export const createUser = async (req: Request, res: Response) => {
@@ -12,17 +12,14 @@ export const createUser = async (req: Request, res: Response) => {
     }
 };
 
-// Get users with filters, sorting, and pagination
 export const fetchUser = async (req: Request, res: Response) => {
     try {
-        const { name, sort, order = 'asc', page, limit } = req.query;
+        const { name, page, limit, minAge, maxAge } = req.query;
 
-        const query = name ? { name: new RegExp(name as string, 'i') } : {};
-
-        const sortOrder = order === 'asc' ? 1 : -1;
+        const query = name || minAge && maxAge ? { name: new RegExp(name as string, 'i'), age: { $gte: minAge, $lte: maxAge } } : {};
 
         const users = await UserModel.find(query)
-            .sort({ age: sortOrder })
+            .sort({ age: 1 })
             .skip((Number(page === '0' ? 1 : page) - 1) * Number(limit))
             .limit(Number(limit));
 
